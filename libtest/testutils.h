@@ -106,6 +106,18 @@ extern GString *current_testcase_description;
 extern gchar *current_testcase_function;
 extern gchar *current_testcase_file;
 
+#ifdef _WIN32
+static inline char *basename(const char *path)
+{
+  char *result = strrchr(path,'/');
+  if (result)
+    {
+      result++;
+    }
+  return result;
+}
+#endif
+
 #define testcase_begin(description_template, ...) \
     do { \
       if (current_testcase_description != NULL) \
