@@ -38,6 +38,7 @@
 #include "hostname.h"
 #include "scratch-buffers.h"
 #include "mainloop-call.h"
+#include "gsocket.h"
 
 #include <iv.h>
 #include <iv_work.h>
@@ -114,6 +115,7 @@ app_fatal(const char *msg)
 void 
 app_startup(void)
 {
+  g_socket_global_init();
   hostname_global_init();
   msg_init(FALSE);
   iv_set_fatal_msg_handler(app_fatal);
@@ -167,6 +169,7 @@ app_shutdown(void)
   dns_cache_global_deinit();
   msg_deinit();
   hostname_global_deinit();
+  g_socket_global_deinit();
   
   /* NOTE: the iv_deinit() call should come here, but there's some exit
    * synchronization issue in libivykis that causes use-after-free with the
