@@ -151,3 +151,27 @@ g_connect(int fd, GSockAddr *remote)
       return G_IO_STATUS_NORMAL;
     }
 }
+
+void
+g_socket_global_init(void)
+{
+#ifdef _WIN32
+  WSADATA wa = { 0 };
+  int err;
+
+  err = WSAStartup(MAKEWORD(2, 2), &wa);
+  if (err != 0)
+    {
+      fprintf(stderr, "Unable to initialize Windows Sockets, error: %d\n", err);
+      exit(1);
+    }
+#endif
+}
+
+void
+g_socket_global_deinit(void)
+{
+#ifdef _WIN32
+  WSACleanup();
+#endif
+}
