@@ -134,8 +134,6 @@ app_fatal(const char *msg)
 void 
 app_startup(void)
 {
-  main_thread_handle = g_thread_self();
-
   g_socket_global_init();
   msg_init(FALSE);
   iv_set_fatal_msg_handler(app_fatal);
