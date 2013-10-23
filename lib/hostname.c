@@ -189,6 +189,7 @@ resolve_hostname(GSockAddr **addr, gchar *name)
         {
           msg_error("Error resolving hostname",
                     evt_tag_str("host", name),
+                    evt_tag_id(MSG_CANT_RESOLVE_HOSTNAME),
                     NULL);
           return FALSE;
         }
@@ -215,6 +216,7 @@ resolve_hostname(GSockAddr **addr, gchar *name)
           G_UNLOCK(resolv_lock);
           msg_error("Error resolving hostname",
                     evt_tag_str("host", name),
+                    evt_tag_id(MSG_CANT_RESOLVE_HOSTNAME),
                     NULL);
           return FALSE;
         }
