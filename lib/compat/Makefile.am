@@ -13,6 +13,7 @@ compatinclude_HEADERS		= 	\
 	lib/compat/socket.h		\
 	lib/compat/mmap.h		\
 	lib/compat/string.h		\
+	lib/compat/syslog.h		\
 	lib/compat/time.h		\
 	lib/compat/win32.h
 
