@@ -208,6 +208,7 @@ EXTRA_DIST += \
 	lib/pragma-grammar.ym		\
 	lib/merge-grammar.pl		\
 	lib/hostname-unix.c		\
+	lib/hostname-win32.c		\
 	lib/ivykis/configure.gnu
 
 lib/plugin-types.h: lib/cfg-grammar.h

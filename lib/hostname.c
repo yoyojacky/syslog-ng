@@ -61,7 +61,11 @@ extract_domain_from_fqdn(const gchar *hostname)
   return NULL;
 }
 
+#ifdef _WIN32
+#include "hostname-win32.c"
+#else
 #include "hostname-unix.c"
+#endif
 
 static void
 validate_hostname_cache(void)
