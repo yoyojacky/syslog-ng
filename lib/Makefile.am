@@ -45,6 +45,7 @@ pkginclude_HEADERS			+= \
 	lib/dnscache.h			\
 	lib/driver.h			\
 	lib/file-perms.h		\
+	lib/get-processor-count.h	\
 	lib/gprocess.h			\
 	lib/gsockaddr.h			\
 	lib/gsocket.h			\
@@ -123,6 +124,7 @@ lib_libsyslog_ng_la_SOURCES		= \
 	lib/driver.c			\
 	lib/file-perms.c		\
 	lib/globals.c			\
+	lib/get-processor-count.c	\
 	lib/gprocess.c			\
 	lib/gsockaddr.c			\
 	lib/gsocket.c			\

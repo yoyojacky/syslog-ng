@@ -25,6 +25,7 @@
 #include "mainloop-worker.h"
 #include "mainloop-call.h"
 #include "logqueue.h"
+#include "get-processor-count.h"
 
 /************************************************************************************
  * I/O worker threads

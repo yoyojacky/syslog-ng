@@ -507,7 +507,6 @@ main_loop_add_options(GOptionContext *ctx)
   main_loop_io_worker_add_options(ctx);
 }
 
-
 void
 main_loop_global_init(void)
 {
