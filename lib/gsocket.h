@@ -34,6 +34,8 @@ GIOStatus g_connect(int fd, GSockAddr *remote);
 gchar *g_inet_ntoa(char *buf, size_t bufsize, struct in_addr a);
 gint g_inet_aton(char *buf, struct in_addr *a);
 
+int g_socket_get_error(void);
+
 void g_socket_global_init(void);
 void g_socket_global_deinit(void);
 

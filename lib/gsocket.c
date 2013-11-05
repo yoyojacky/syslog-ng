@@ -152,6 +152,37 @@ g_connect(int fd, GSockAddr *remote)
     }
 }
 
+#ifdef _WIN32
+
+int
+g_socket_get_error(void)
+{
+  int res = WSAGetLastError();
+
+  if (res == WSAEWOULDBLOCK)
+    {
+      return EAGAIN;
+    }
+  else if (res == WSAEINTR)
+    {
+      return EINTR;
+    }
+  else
+    {
+      return res;
+    }
+}
+
+#else
+
+int
+g_socket_get_error(void)
+{
+  return errno;
+}
+
+#endif /* _WIN32 */
+
 void
 g_socket_global_init(void)
 {
