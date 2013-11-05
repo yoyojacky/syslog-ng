@@ -8,6 +8,7 @@ compatinclude_HEADERS		= 	\
 	lib/compat/lfs.h		\
 	lib/compat/pio.h		\
 	lib/compat/socket.h		\
+	lib/compat/mmap.h		\
 	lib/compat/string.h		\
 	lib/compat/time.h		\
 	lib/compat/win32.h
@@ -17,8 +18,10 @@ compat_sources			= 	\
 	lib/compat/clock_gettime.c	\
 	lib/compat/inet_aton.c		\
 	lib/compat/fsync.c		\
+	lib/compat/getpagesize.c	\
 	lib/compat/localtime_r.c	\
 	lib/compat/memrchr.c		\
+	lib/compat/mmap.c		\
 	lib/compat/nanosleep.c		\
 	lib/compat/pio.c		\
 	lib/compat/strcasestr.c		\

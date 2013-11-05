@@ -26,11 +26,11 @@
 #include "serialize.h"
 #include "messages.h"
 #include "misc.h"
+#include "compat/mmap.h"
 
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <sys/mman.h>
 #include <errno.h>
 #include <string.h>
 
