@@ -23,6 +23,7 @@
 
 #include "logproto-file-writer.h"
 #include "messages.h"
+#include "compat/fsync.h"
 
 #include <string.h>
 #include <sys/uio.h>

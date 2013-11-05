@@ -568,6 +568,7 @@ AC_CHECK_FUNCS(strdup		\
 	localtime_r		\
 	gmtime_r		\
 	strtok_r		\
+	fsync			\
 	strptime		\
 	nanosleep)
 old_LIBS=$LIBS
