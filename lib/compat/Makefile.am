@@ -4,6 +4,7 @@ compatinclude_HEADERS		= 	\
 	lib/compat/compat.h		\
 	lib/compat/getutent.h		\
 	lib/compat/fsync.h		\
+	lib/compat/getpid.h		\
 	lib/compat/glib.h		\
 	lib/compat/lfs.h		\
 	lib/compat/pio.h		\
