@@ -6,6 +6,7 @@ compatinclude_HEADERS		= 	\
 	lib/compat/fsync.h		\
 	lib/compat/getpid.h		\
 	lib/compat/glib.h		\
+	lib/compat/iov.h		\
 	lib/compat/lfs.h		\
 	lib/compat/pio.h		\
 	lib/compat/socket.h		\
@@ -23,6 +24,7 @@ compat_sources			= 	\
 	lib/compat/inet_aton.c		\
 	lib/compat/inet_ntop.c		\
 	lib/compat/inet_pton.c		\
+	lib/compat/iov.c		\
 	lib/compat/localtime_r.c	\
 	lib/compat/memrchr.c		\
 	lib/compat/mmap.c		\
