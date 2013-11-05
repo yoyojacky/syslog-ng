@@ -427,7 +427,9 @@ AC_CHECK_HEADERS(strings.h	\
 	sys/capability.h	\
 	sys/prctl.h		\
 	utmp.h			\
-	utmpx.h)
+	utmpx.h			\
+	time.h			\
+	sys/time.h)
 AC_CHECK_HEADERS(tcpd.h)
 
 
@@ -565,7 +567,9 @@ AC_CHECK_FUNCS(strdup		\
 	memrchr			\
 	localtime_r		\
 	gmtime_r		\
-	strtok_r)
+	strtok_r		\
+	strptime		\
+	nanosleep)
 old_LIBS=$LIBS
 LIBS=$BASE_LIBS
 AC_CHECK_FUNCS(clock_gettime)
