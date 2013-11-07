@@ -159,8 +159,49 @@ path_resolver_new(const gchar *sysprefix)
   return &self->super;
 }
 
+#ifdef _WIN32
+
 static gchar *
-lookup_sysprefix(void)
+lookup_exec_directory_win32(void)
+{
+  char currDirectory[_MAX_PATH];
+  char *pIdx;
+
+  GetModuleFileName(NULL, currDirectory, sizeof(currDirectory));
+  pIdx = strrchr(currDirectory, '\\');
+  if (pIdx)
+    *pIdx = '\0';
+  pIdx = strrchr(currDirectory, '\\');
+  if (pIdx)
+    {
+      if ((strcmp((pIdx + 1), "bin") == 0) || (strcmp((pIdx + 1), "lib") == 0))
+        {
+          *pIdx = '\0';
+        }
+    }
+  return g_strdup(currDirectory);
+
+}
+
+static gchar *
+lookup_sysprefix_win32(void)
+{
+  gchar buf[_MAX_PATH];
+
+  if (GetEnvironmentVariable("SYSLOGNG_PREFIX", buf, sizeof(buf)) != 0)
+    {
+      return g_strdup(buf);
+    }
+  else
+    {
+      return lookup_exec_directory_win32();
+    }
+}
+
+#else
+
+static gchar *
+lookup_sysprefix_unix(void)
 {
   gchar *v;
 
@@ -168,6 +209,19 @@ lookup_sysprefix(void)
   if (v)
     return v;
   return PATH_PREFIX;
+}
+
+#endif
+
+
+static gchar *
+lookup_sysprefix(void)
+{
+#ifndef _WIN32
+  return lookup_sysprefix_unix();
+#else
+  return lookup_sysprefix_win32();
+#endif
 }
 
 const gchar *
