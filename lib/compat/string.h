@@ -47,4 +47,11 @@ void *memrchr(const void *s, int c, size_t n);
 #ifndef HAVE_STRTOK_R
 char *strtok_r(char *string, const char *delim, char **saveptr);
 #endif
+
+#ifdef _WIN32
+#define strncasecmp _strnicmp
+#define strcasecmp _stricmp
+#endif
+
+
 #endif
