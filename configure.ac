@@ -570,6 +570,9 @@ AC_CHECK_FUNCS(strdup		\
 	strtok_r		\
 	fsync			\
 	getpagesize		\
+	inet_ntop		\
+	inet_pton		\
+	inet_aton		\
 	strptime		\
 	nanosleep)
 old_LIBS=$LIBS

@@ -20,62 +20,38 @@
  * COPYING for details.
  *
  */
-#ifndef COMPAT_SOCKET_H_INCLUDED
-#define COMPAT_SOCKET_H_INCLUDED 1
-
-#include "compat/compat.h"
-
-#ifndef _WIN32
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#else
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#endif
-
-#ifndef SHUT_RDWR
-#define SHUT_RDWR SD_BOTH
-#endif
-
-#ifdef _WIN32
-
-#define ESTALE WSAESTALE
-#define ECONNRESET WSAECONNRESET
-#define EWOULDBLOCK  WSAEWOULDBLOCK
-#define ECONNABORTED WSAECONNABORTED
-#define EINPROGRESS WSAEINPROGRESS
-
-#endif
+#include "compat/socket.h"
 
 #ifndef HAVE_INET_NTOP
-const char *inet_ntop(int af, const void *src, char *dst, socklen_t cnt);
+#include <string.h>
+
+#ifndef MIN
+#define MIN(a, b)    ((a) < (b) ? (a) : (b))
 #endif
 
-#ifndef HAVE_INET_PTON
-int inet_pton(int af, const char *src, void *dst);
-#endif
-
-#ifndef HAVE_STRUCT_SOCKADDR_STORAGE
-struct sockaddr_storage 
+const char *
+inet_ntop(int af, const void *src, char *dst, socklen_t cnt)
 {
-  union
-  {
-    sa_family_t ss_family;
-    struct sockaddr __sa;
-    struct sockaddr_un __sun;
-    struct sockaddr_in __sin;
-#if ENABLE_IPV6
-    struct sockaddr_in6 __sin6;
-#endif
-  };
-};
-#endif
+  if (af == AF_INET)
+    {
+      struct sockaddr_in in;
 
-#ifndef HAVE_INET_ATON
-int inet_aton(const char *cp, struct in_addr *dst);
-#endif
+      memset(&in, 0, sizeof(in));
+      in.sin_family = AF_INET;
+      memcpy(&in.sin_addr, src, MIN(cnt, sizeof(in.sin_addr)));
+      getnameinfo((struct sockaddr *) &in, sizeof(struct sockaddr_in), dst, cnt, NULL, 0, NI_NUMERICHOST);
+      return dst;
+    }
+  else if (af == AF_INET6)
+    {
+      struct sockaddr_in6 in;
 
+      memset(&in, 0, sizeof(in));
+      in.sin6_family = AF_INET6;
+      memcpy(&in.sin6_addr, src, MIN(cnt, sizeof(in.sin6_addr)));
+      getnameinfo((struct sockaddr *) &in, sizeof(struct sockaddr_in6), dst, cnt, NULL, 0, NI_NUMERICHOST);
+      return dst;
+    }
+  return NULL;
+}
 #endif

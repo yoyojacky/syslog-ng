@@ -20,6 +20,9 @@ compat_sources			= 	\
 	lib/compat/inet_aton.c		\
 	lib/compat/fsync.c		\
 	lib/compat/getpagesize.c	\
+	lib/compat/inet_aton.c		\
+	lib/compat/inet_ntop.c		\
+	lib/compat/inet_pton.c		\
 	lib/compat/localtime_r.c	\
 	lib/compat/memrchr.c		\
 	lib/compat/mmap.c		\
