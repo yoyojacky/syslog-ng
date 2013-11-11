@@ -227,7 +227,7 @@ main_loop_reload_config_apply(void)
   /* this is already running with the new config in place */
   app_post_config_loaded();
 
-  show_config_reload_message(current_configuration);
+//  show_config_reload_message(current_configuration);
  finish:
   main_loop_new_config = NULL;
   main_loop_old_config = NULL;
@@ -301,7 +301,7 @@ main_loop_exit_initiate(void)
   if (main_loop_is_terminating())
     return;
 
-  show_config_shutdown_message(current_configuration);
+  // show_config_shutdown_message(current_configuration);
 
   IV_TIMER_INIT(&main_loop_exit_timer);
   iv_validate_now();
@@ -474,7 +474,7 @@ main_loop_deinit(void)
 void
 main_loop_run(void)
 {
-  show_config_startup_message(current_configuration);
+//  show_config_startup_message(current_configuration);
   
 
   /* main loop */
