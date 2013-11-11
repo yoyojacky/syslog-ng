@@ -226,9 +226,8 @@ main_loop_reload_config_apply(void)
 
   /* this is already running with the new config in place */
   app_post_config_loaded();
-  msg_notice("Configuration reload request received, reloading configuration",
-               NULL);
 
+  show_config_reload_message(current_configuration);
  finish:
   main_loop_new_config = NULL;
   main_loop_old_config = NULL;
@@ -302,9 +301,7 @@ main_loop_exit_initiate(void)
   if (main_loop_is_terminating())
     return;
 
-  msg_notice("syslog-ng shutting down",
-             evt_tag_str("version", VERSION),
-             NULL);
+  show_config_shutdown_message(current_configuration);
 
   IV_TIMER_INIT(&main_loop_exit_timer);
   iv_validate_now();
@@ -477,9 +474,8 @@ main_loop_deinit(void)
 void
 main_loop_run(void)
 {
-  msg_notice("syslog-ng starting up",
-             evt_tag_str("version", VERSION),
-             NULL);
+  show_config_startup_message(current_configuration);
+  
 
   /* main loop */
   service_management_indicate_readiness();
