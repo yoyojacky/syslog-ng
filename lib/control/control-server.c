@@ -25,7 +25,11 @@
 #include "misc.h"
 
 #ifndef CONTROL_UNITTEST
-#include "control-server-unix.c"
+  #ifndef _WIN32
+    #include "control-server-unix.c"
+  #else
+    #include "control-server-win32.c"
+  #endif
 #endif
 
 void

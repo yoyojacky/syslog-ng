@@ -8,6 +8,8 @@ control_sources = \
 	lib/control/control.c			\
 	lib/control/control-server.c
 
-EXTRA_DIST += lib/control/control-server-unix.c
+EXTRA_DIST += \
+	lib/control/control-server-unix.c \
+	lib/control/control-server-win32.c
 
 include lib/control/tests/Makefile.am
