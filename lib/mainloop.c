@@ -321,6 +321,23 @@ main_loop_exit_initiate(void)
  * signal handlers
  ************************************************************************************/
 
+#ifdef _WIN32
+static void
+sig_term_handler_win32(int signal)
+{
+  main_loop_exit();
+}
+
+static void
+setup_signals(void)
+{
+  /* iv_signal doesn't work on Win32, use low-level signal APIs directly */
+  signal(SIGTERM, sig_term_handler_win32);
+  signal(SIGINT, sig_term_handler_win32);
+}
+
+#else
+
 static void
 sig_hup_handler(void *s)
 {
@@ -350,6 +367,7 @@ sig_child_handler(void *s)
     }
   while (pid > 0);
 }
+
 
 static void
 _ignore_signal(gint signum)
@@ -381,6 +399,8 @@ setup_signals(void)
   _register_signal_handler(&sigterm_poll, SIGTERM, sig_term_handler);
   _register_signal_handler(&sigint_poll, SIGINT, sig_term_handler);
 }
+
+#endif
 
 /************************************************************************************
  * syslog-ng main loop
