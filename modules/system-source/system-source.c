@@ -243,6 +243,19 @@ system_generate_system(CfgLexer *lexer, gint type, const gchar *name,
   else if (strcmp(u.sysname, "HP-UX") == 0)
     {
       system_sysblock_add_pipe(sysblock, "/dev/log", 2048);
+
+      /* NOTE: the log-fetch-limit() option below is a workaround. HP-UX
+       * doesn't support O_NONBLOCK on /dev/klog, thus when issuing a read()
+       * without data being available, it will block until further data
+       * becomes available. (e.g. the kernel is logging something).
+       *
+       * syslog-ng can issue a read() multiple times for a single poll()
+       * POLLIN indication in the following cases:
+       *   - window-size of fetch-limit is depleted and we restart the reader
+       *     (in this case we still have data ready in our input buffer)
+       *   - no-multi-read is FALSE, then we always try to read one more time.
+       */
+      
       system_sysblock_add_file(sysblock, "/dev/klog", 0, "kernel", "kernel",
                                NULL, "log_fetch_limit(1000)");
     }
