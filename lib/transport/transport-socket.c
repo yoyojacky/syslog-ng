@@ -37,6 +37,10 @@ log_transport_dgram_socket_read_method(LogTransport *s, gpointer buf, gsize bufl
     {
       rc = recvfrom(self->super.fd, buf, buflen, 0,
                     (struct sockaddr *) &ss, &salen);
+#ifdef _WIN32
+      if (rc == -1)
+        errno = getsockerror();
+#endif
     }
   while (rc == -1 && errno == EINTR);
   if (rc != -1 && salen && aux)
@@ -59,6 +63,10 @@ log_transport_dgram_socket_write_method(LogTransport *s, const gpointer buf, gsi
   do
     {
       rc = send(self->super.fd, buf, buflen, 0);
+#ifdef _WIN32
+      if (rc == -1)
+        errno = getsockerror();
+#endif
     }
   while (rc == -1 && errno == EINTR);
 
@@ -102,6 +110,10 @@ log_transport_stream_socket_read_method(LogTransport *s, gpointer buf, gsize buf
   do
     {
       rc = recv(self->super.fd, buf, buflen, 0);
+#ifdef _WIN32
+      if (rc == -1)
+        errno = getsockerror();
+#endif
     }
   while (rc == -1 && errno == EINTR);
   return rc;
@@ -116,6 +128,10 @@ log_transport_stream_socket_write_method(LogTransport *s, const gpointer buf, gs
   do
     {
       rc = send(self->super.fd, buf, buflen, 0);
+#ifdef _WIN32
+      if (rc == -1)
+        errno = getsockerror();
+#endif
     }
   while (rc == -1 && errno == EINTR);
   return rc;
