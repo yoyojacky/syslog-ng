@@ -786,20 +786,18 @@ typedef struct _PersistStateKeysForeachData
 static void
 _foreach_entry_func(gpointer key, gpointer value, gpointer userdata)
 {
-  PersistStateKeysForeachData* data = (PersistStateKeysForeachData*) userdata;
-  gchar* name = (gchar*) key;
-  PersistEntry* entry = (PersistEntry*) value;
+  PersistStateKeysForeachData *data = (PersistStateKeysForeachData *) userdata;
+  PersistEntry *entry = (PersistEntry *) value;
+  gchar *name = (gchar *) key;
 
-  PersistValueHeader *header = persist_state_map_entry(data->storage, entry->ofs - sizeof(PersistValueHeader) );
+  PersistValueHeader *header = persist_state_map_entry(data->storage, entry->ofs - sizeof(PersistValueHeader));
   gint size = GUINT32_FROM_BE(header->size);
-  persist_state_unmap_entry(data->storage, entry->ofs );
-
-  gpointer* state = persist_state_map_entry(data->storage, entry->ofs);
-
-  data->func(name, size, state, data->userdata);
-
   persist_state_unmap_entry(data->storage, entry->ofs);
-};
+
+  gpointer *state = persist_state_map_entry(data->storage, entry->ofs);
+  data->func(name, size, state, data->userdata);
+  persist_state_unmap_entry(data->storage, entry->ofs);
+}
 
 void
 persist_state_foreach_entry(PersistState *self, PersistStateForeachFunc func, gpointer userdata)
