@@ -59,7 +59,7 @@ test_persist_state_open_failes_when_file_open_fails(void)
   assert_false(persist_state_start_dump(state), "persist_state_start_dump returned with success when persist file open failed!");
 
   cancel_and_destroy_persist_state(state);
-};
+}
 
 void
 write_test_file_for_test_in_use_handle(gboolean in_use_handle)
@@ -74,7 +74,7 @@ write_test_file_for_test_in_use_handle(gboolean in_use_handle)
     persist_state_remove_entry(state, "alma");
 
   commit_and_free_persist_state(state);
-};
+}
 
 void
 test_persist_state_in_use_handle_is_loaded(void)
@@ -94,7 +94,7 @@ test_persist_state_in_use_handle_is_loaded(void)
   assert_false(handle == 0, "lookup failed when looking for simple entry with in_use = TRUE!");
 
   cancel_and_destroy_persist_state(state);
-};
+}
 
 void
 test_persist_state_not_in_use_handle_is_not_loaded(void)
@@ -114,7 +114,7 @@ test_persist_state_not_in_use_handle_is_not_loaded(void)
   assert_true(handle == 0, "lookup succeeded when looking for simple entry with in_use = FALSE!");
 
   cancel_and_destroy_persist_state(state);
-};
+}
 
 void
 test_persist_state_not_in_use_handle_is_loaded_in_dump_mode(void)
@@ -135,7 +135,7 @@ test_persist_state_not_in_use_handle_is_loaded_in_dump_mode(void)
   assert_false(handle == 0, "lookup failed in dump mode when looking for simple entry with in_use = FALSE!");
 
   cancel_and_destroy_persist_state(state);
-};
+}
 
 
 void
