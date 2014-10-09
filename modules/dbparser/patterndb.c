@@ -600,9 +600,7 @@ pdb_rule_run_actions(PDBRule *self, gint trigger, PatternDB *db, PDBContext *con
                     }
                   if (context)
                     {
-                      g_ptr_array_add(context->messages, genmsg);
                       pdb_message_apply(&action->content.message, context, genmsg, buffer);
-                      g_ptr_array_remove_index_fast(context->messages, context->messages->len - 1);
                     }
                   else
                     {
