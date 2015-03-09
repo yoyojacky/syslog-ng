@@ -57,18 +57,27 @@ system_sysblock_add_unix_dgram_driver(GString *sysblock, const gchar *path,
 }
 
 static void
-system_sysblock_add_unix_dgram(GString *sysblock, const gchar *path,
+system_sysblock_add_unix_dgram(GlobalConfig *cfg, GString *sysblock, const gchar *path,
                                const gchar *perms, const gchar *recvbuf_size)
 {
   GString *unix_driver = g_string_sized_new(0);
   
   system_sysblock_add_unix_dgram_driver(unix_driver, path, perms, recvbuf_size);
 
-  g_string_append_printf(sysblock, 
+  if (cfg_is_config_version_older(cfg, 0x0306))
+    {
+      msg_warning_once("WARNING: Starting with " VERSION_3_6 ", the system() source overrides $PID value from ${.unix.pid}. No additional action is needed",
+                       NULL);
+      g_string_append_printf(sysblock, "%s", unix_driver->str);
+    }
+  else
+    {
+      g_string_append_printf(sysblock,
 "channel {\n"
 "    source { %s };\n"
 "    rewrite { set(\"${.unix.pid}\" value(\"PID\") condition(\"${.unix.pid}\" != \"\")); };\n"
 "};\n", unix_driver->str);
+    }
 
   g_string_free(unix_driver, TRUE);
 }
@@ -97,24 +106,30 @@ system_sysblock_add_module(GString *sysblock, const gchar *mod)
 }
 
 static void
-system_sysblock_add_sun_streams(GString *sysblock, const gchar *path,
+system_sysblock_add_sun_streams(GlobalConfig *cfg, GString *sysblock, const gchar *path,
                                 const gchar *door)
 {
   GString *solaris_driver = g_string_sized_new(0);
-
-
 
   g_string_append_printf(solaris_driver, "sun-streams(\"%s\"", path);
   if (door)
     g_string_append_printf(solaris_driver, " door(\"%s\")", door);
   g_string_append(solaris_driver, ");\n");
 
-
-  g_string_append_printf(sysblock,
+  if (cfg_is_config_version_older(cfg, 0x0307))
+    {
+      msg_warning_once("WARNING: Starting with " VERSION_3_7 ", the system() source extracts Solaris MSGID values. No additional action is needed",
+                       NULL);
+      g_string_append_printf(sysblock, "%s", solaris_driver->str);
+    }
+  else
+    {
+      g_string_append_printf(sysblock,
 "channel {\n"
 "    source { %s };\n"
 "    parser { extract-solaris-msgid(); };\n"
 "};\n", solaris_driver->str);
+    }
   g_string_free(solaris_driver, TRUE);
 }
 
@@ -241,20 +256,20 @@ _is_running_in_linux_container(void)
 }
 
 static void
-system_sysblock_add_linux(GString *sysblock)
+system_sysblock_add_linux(GlobalConfig *cfg, GString *sysblock)
 {
   if (service_management_get_type() == SMT_SYSTEMD)
     system_sysblock_add_systemd_source(sysblock);
   else
     {
-      system_sysblock_add_unix_dgram(sysblock, "/dev/log", NULL, "8192");
+      system_sysblock_add_unix_dgram(cfg, sysblock, "/dev/log", NULL, "8192");
       if (!_is_running_in_linux_container())
         system_sysblock_add_linux_kmsg(sysblock);
     }
 }
 
 static gboolean
-system_generate_system_transports(GString *sysblock)
+system_generate_system_transports(GlobalConfig *cfg, GString *sysblock)
 {
   struct utsname u;
 
@@ -268,30 +283,30 @@ system_generate_system_transports(GString *sysblock)
 
   if (strcmp(u.sysname, "Linux") == 0)
     {
-      system_sysblock_add_linux(sysblock);
+      system_sysblock_add_linux(cfg, sysblock);
     }
   else if (strcmp(u.sysname, "SunOS") == 0)
     {
       system_sysblock_add_module(sysblock, "afstreams");
 
       if (strcmp(u.release, "5.8") == 0)
-        system_sysblock_add_sun_streams(sysblock, "/dev/log", NULL);
+        system_sysblock_add_sun_streams(cfg, sysblock, "/dev/log", NULL);
       else if (strcmp(u.release, "5.9") == 0)
-        system_sysblock_add_sun_streams(sysblock, "/dev/log", "/etc/.syslog_door");
+        system_sysblock_add_sun_streams(cfg, sysblock, "/dev/log", "/etc/.syslog_door");
       else
-        system_sysblock_add_sun_streams(sysblock, "/dev/log", "/var/run/syslog_door");
+        system_sysblock_add_sun_streams(cfg, sysblock, "/dev/log", "/var/run/syslog_door");
     }
   else if (strcmp(u.sysname, "FreeBSD") == 0)
     {
-      system_sysblock_add_unix_dgram(sysblock, "/var/run/log", NULL, NULL);
-      system_sysblock_add_unix_dgram(sysblock, "/var/run/logpriv", "0600", NULL);
+      system_sysblock_add_unix_dgram(cfg, sysblock, "/var/run/log", NULL, NULL);
+      system_sysblock_add_unix_dgram(cfg, sysblock, "/var/run/logpriv", "0600", NULL);
 
       if (!system_freebsd_is_jailed())
         system_sysblock_add_freebsd_klog(sysblock, u.release);
     }
   else if (strcmp(u.sysname, "GNU/kFreeBSD") == 0)
     {
-      system_sysblock_add_unix_dgram(sysblock, "/var/run/log", NULL, NULL);
+      system_sysblock_add_unix_dgram(cfg, sysblock, "/var/run/log", NULL, NULL);
       system_sysblock_add_freebsd_klog(sysblock, u.release);
     }
   else if (strcmp(u.sysname, "HP-UX") == 0)
@@ -302,7 +317,7 @@ system_generate_system_transports(GString *sysblock)
            strcmp(u.sysname, "OSF1") == 0 ||
            strncmp(u.sysname, "CYGWIN", 6) == 0)
     {
-      system_sysblock_add_unix_dgram(sysblock, "/dev/log", NULL, NULL);
+      system_sysblock_add_unix_dgram(cfg, sysblock, "/dev/log", NULL, NULL);
     }
   else
     {
@@ -328,8 +343,6 @@ system_generate_cim_parser(GlobalConfig *cfg, GString *sysblock)
 {
   if (cfg_is_config_version_older(cfg, 0x0306))
     {
-      msg_warning_once("WARNING: Starting with " VERSION_3_6 ", the system() source performs JSON parsing of messages starting with the '@cim:' prefix. No additional action is needed",
-                       NULL);
       return;
     }
 
@@ -365,20 +378,33 @@ system_generate_system(CfgLexer *lexer, gint type, const gchar *name,
 
   sysblock = g_string_sized_new(1024);
 
-  g_string_append(sysblock,
-                  "channel {\n"
-                  "    source {\n");
-
-  if (!system_generate_system_transports(sysblock))
+  if (cfg_is_config_version_older(cfg, 0x0306))
     {
-      goto exit;
+      if (!system_generate_system_transports(cfg, sysblock))
+        {
+          msg_warning_once("WARNING: Starting with " VERSION_3_6 ", the system() source performs JSON parsing of messages starting with the '@cim:' prefix. No additional action is needed",
+                           NULL);
+          goto exit;
+        }
+    }
+  else
+    {
+      g_string_append(sysblock,
+                      "channel {\n"
+                      "    source {\n");
+
+      if (!system_generate_system_transports(cfg, sysblock))
+        {
+          goto exit;
+        }
+
+      g_string_append(sysblock, "    }; # source\n");
+
+      system_generate_cim_parser(cfg, sysblock);
+
+      g_string_append(sysblock, "}; # channel\n");
     }
 
-  g_string_append(sysblock, "    }; # source\n");
-
-  system_generate_cim_parser(cfg, sysblock);
-
-  g_string_append(sysblock, "}; # channel\n");
   result = cfg_lexer_include_buffer(lexer, buf, sysblock->str, sysblock->len);
  exit:
   g_string_free(sysblock, TRUE);
