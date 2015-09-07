@@ -32,7 +32,14 @@ int dbparser_parse(CfgLexer *lexer, LogParser **instance, gpointer arg);
 static CfgLexerKeyword dbparser_keywords[] =
 {
   { "db_parser",          KW_DB_PARSER, 0x0300 },
+  { "correllate",         KW_CORRELLATE, 0x0307 },
+
+  /* correllate options */
   { "inject_mode",        KW_INJECT_MODE, 0x0303 },
+  { "context_id",         KW_CONTEXT_ID, 0x0307 },
+  { "timeout",            KW_TIMEOUT, 0x0307 },
+  { "message",            KW_MESSAGE, 0x0307 },
+  { "inherit_properties", KW_INHERIT_PROPERTIES, 0x0307 },
   { NULL }
 };
 

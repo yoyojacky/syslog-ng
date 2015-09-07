@@ -53,6 +53,8 @@ modules_dbparser_libdbparser_la_SOURCES			=	\
 	modules/dbparser/dbparser-parser.c			\
 	modules/dbparser/dbparser-parser.h			\
 	modules/dbparser/dbparser-plugin.c			\
+	modules/dbparser/correllate-parser.c			\
+	modules/dbparser/correllate-parser.h			\
 	$(modules_dbparser_libsyslog_ng_patterndb_la_SOURCES)
 modules_dbparser_libdbparser_la_CPPFLAGS		=	\
 	$(AM_CPPFLAGS)						\

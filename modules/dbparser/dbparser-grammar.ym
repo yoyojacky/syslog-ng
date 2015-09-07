@@ -30,13 +30,15 @@
 %code {
 
 #include "dbparser.h"
+#include "cfg-grammar.h"
+#include "correllate-parser.h"
 #include "cfg-parser.h"
 #include "dbparser-grammar.h"
 #include "syslog-names.h"
 #include "messages.h"
 #include <string.h>
-extern LogParser *last_parser;
 
+SyntheticMessage *last_message;
 }
 
 %name-prefix "dbparser_"
@@ -52,9 +54,14 @@ extern LogParser *last_parser;
 /* INCLUDE_DECLS */
 
 %token KW_DB_PARSER
+%token KW_CORRELLATE
 %token KW_INJECT_MODE
+%token KW_CONTEXT_ID
+%token KW_INHERIT_PROPERTIES
+%token KW_TIMEOUT
 
 %type <cptr> stateful_parser_inject_mode
+%type <ptr>  synthetic_message
 
 %%
 
@@ -69,6 +76,11 @@ parser_expr_db
           }
           parser_db_opts
           ')'
+	| KW_CORRELLATE '('
+	  {
+	    last_parser = *instance = correllate_new(configuration);
+	  }
+          correllate_opts ')'
         ;
 
 parser_db_opts
@@ -91,6 +103,40 @@ stateful_parser_inject_mode
 	: string				{ $$ = $1; }
 	| KW_INTERNAL				{ $$ = strdup("internal"); }
 	;
+
+correllate_opts
+	: correllate_opt correllate_opts
+	|
+	;
+
+correllate_opt
+	: KW_CONTEXT_ID '(' template_content ')'		{ correllate_set_context_id_template(last_parser, $3); log_template_unref($3); }
+	| KW_TIMEOUT '(' LL_NUMBER ')'				{ correllate_set_context_timeout(last_parser, $3); }
+	| KW_MESSAGE '(' synthetic_message ')'			{ correllate_set_synthetic_message(last_parser, $3); }
+	| stateful_parser_opt
+	;
+
+synthetic_message
+	: { last_message = synthetic_message_new(); } synthetic_message_opts { $$ = last_message; }
+	;
+
+
+synthetic_message_opts
+	: synthetic_message_opt synthetic_message_opts
+	|
+	;
+
+synthetic_message_opt
+	: KW_INHERIT_PROPERTIES '(' string ')'			{ free($3); }
+	| KW_VALUE '(' string template_content ')'
+	  {
+	    synthetic_message_add_value_template(last_message, $3, $4);
+	    free($3);
+            log_template_unref($4);
+	  }
+	| KW_TAGS '(' string ')'				{ synthetic_message_add_tag(last_message, $3); free($3); }
+	;
+
 
 /* INCLUDE_RULES */
 
