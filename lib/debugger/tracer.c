@@ -24,10 +24,24 @@
 #include "debugger/tracer.h"
 
 void
-tracer_stop_on_breakpoint(Tracer *self)
+tracer_prepare_before_stop(Tracer *self)
 {
   g_mutex_lock(self->breakpoint_mutex);
+  self->stop_is_prepared = TRUE;
+}
 
+void
+tracer_resume_after_stop(Tracer *self)
+{
+  g_assert(self->stop_is_prepared);
+  self->stop_is_prepared = FALSE;
+  g_mutex_unlock(self->breakpoint_mutex);
+}
+
+void
+tracer_stop_on_breakpoint(Tracer *self)
+{
+  g_assert(self->stop_is_prepared);
   /* send break point */
   self->breakpoint_hit = TRUE;
   g_cond_signal(self->breakpoint_cond);
@@ -36,7 +50,6 @@ tracer_stop_on_breakpoint(Tracer *self)
   while (!self->resume_requested)
     g_cond_wait(self->resume_cond, self->breakpoint_mutex);
   self->resume_requested = FALSE;
-  g_mutex_unlock(self->breakpoint_mutex);
 }
 
 void

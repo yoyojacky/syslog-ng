@@ -290,8 +290,9 @@ _handle_interactive_prompt(Debugger *self)
 {
   gchar buf[1024];
   LogPipe *current_pipe = self->current_pipe;
+  LogMessage *current_msg = self->current_msg;
 
-  printf("Breakpoint hit %s\n", log_expr_node_format_location(current_pipe->expr_node, buf, sizeof(buf)));
+  printf("Breakpoint hit %s, %p\n", log_expr_node_format_location(current_pipe->expr_node, buf, sizeof(buf)), current_msg);
   _display_source_line(current_pipe->expr_node);
   _display_msg_with_template(self, self->current_msg, self->display_template);
   while (1)
@@ -328,6 +329,7 @@ debugger_start_console(Debugger *self)
 gboolean
 debugger_stop_at_breakpoint(Debugger *self, LogPipe *pipe, LogMessage *msg)
 {
+  tracer_prepare_before_stop(self->tracer);
   self->drop_current_message = FALSE;
   self->current_msg = log_msg_ref(msg);
   self->current_pipe = log_pipe_ref(pipe);
@@ -336,6 +338,7 @@ debugger_stop_at_breakpoint(Debugger *self, LogPipe *pipe, LogMessage *msg)
   log_pipe_unref(self->current_pipe);
   self->current_msg = NULL;
   self->current_pipe = NULL;
+  tracer_resume_after_stop(self->tracer);
   return !self->drop_current_message;
 }
 
