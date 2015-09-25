@@ -276,6 +276,11 @@ __seek_to_head(JournalReader *self)
           NULL);
       return FALSE;
     }
+  else
+    {
+      msg_debug("Seeking the journal to the current journal HEAD",
+                NULL);
+    }
   return TRUE;
 }
 
@@ -292,6 +297,12 @@ __seek_to_saved_state(JournalReader *self)
           evt_tag_errno("error", errno),
           NULL);
       return __seek_to_head(self);
+    }
+  else
+    {
+      msg_debug("Seeking the journal to the last cursor position",
+                evt_tag_str("cursor", state->cursor),
+                NULL);
     }
   journald_next(self->journal);
   return TRUE;
