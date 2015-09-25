@@ -127,7 +127,7 @@ synthetic_message_opts
 	;
 
 synthetic_message_opt
-	: KW_INHERIT_PROPERTIES '(' string ')'			{ free($3); }
+	: KW_INHERIT_PROPERTIES '(' string ')'			{ correllate_set_inherit_properties(last_parser, $3); free($3); }
 	| KW_VALUE '(' string template_content ')'
 	  {
 	    synthetic_message_add_value_template(last_message, $3, $4);
