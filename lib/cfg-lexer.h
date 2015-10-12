@@ -182,7 +182,6 @@ void cfg_lexer_inject_token_block(CfgLexer *self, CfgTokenBlock *block);
 gboolean cfg_lexer_register_block_generator(CfgLexer *self, gint context, const gchar *name, CfgBlockGeneratorFunc generator, gpointer user_data, GDestroyNotify user_data_free);
 
 int cfg_lexer_lex(CfgLexer *self, YYSTYPE *yylval, YYLTYPE *yylloc);
-YYSTYPE* cfg_lexer_clone_token(const YYSTYPE *original);
 void cfg_lexer_free_token(YYSTYPE *token);
 
 CfgLexer *cfg_lexer_new(FILE *file, const gchar *filename, GString *preprocess_output);
@@ -194,6 +193,7 @@ const gchar *cfg_lexer_lookup_context_name_by_type(gint id);
 
 /* token block objects */
 
+void cfg_token_block_add_and_consume_token(CfgTokenBlock *self, YYSTYPE *token);
 void cfg_token_block_add_token(CfgTokenBlock *self, YYSTYPE *token);
 YYSTYPE *cfg_token_block_get_token(CfgTokenBlock *self);
 

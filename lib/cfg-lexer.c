@@ -716,34 +716,30 @@ cfg_lexer_generate_block(CfgLexer *self, gint context, const gchar *name, CfgBlo
   return gen->generator(self, context, name, args, gen->generator_data);
 }
 
-YYSTYPE*
-cfg_lexer_clone_token(const YYSTYPE *original)
+static void
+cfg_lexer_copy_token(YYSTYPE *dest, const YYSTYPE *original)
 {
-  YYSTYPE *cloned = (YYSTYPE*) malloc(sizeof(YYSTYPE));
-
   int type = original->type;
-  cloned->type = type;
+  dest->type = type;
 
   if (type == LL_TOKEN)
     {
-      cloned->token = original->token;
+      dest->token = original->token;
     }
   else if (type == LL_IDENTIFIER ||
           type == LL_STRING ||
           type == LL_BLOCK)
     {
-      cloned->cptr = strdup(original->cptr);
+      dest->cptr = strdup(original->cptr);
     }
   else if (type == LL_NUMBER)
     {
-      cloned->num = original->num;
+      dest->num = original->num;
     }
   else if (type == LL_FLOAT)
     {
-      cloned->fnum = original->fnum;
+      dest->fnum = original->fnum;
     }
-
-  return cloned;
 }
 
 void
@@ -807,10 +803,6 @@ cfg_lexer_lex(CfgLexer *self, YYSTYPE *yylval, YYLTYPE *yylloc)
             {
               tok = token->token;
               injected = TRUE;
-            }
-          else if (token->type == LL_IDENTIFIER || token->type == LL_STRING)
-            {
-              yylval->cptr = token->cptr;
             }
 
           goto exit;
@@ -1095,10 +1087,19 @@ cfg_lexer_lookup_context_name_by_type(gint type)
 /* token blocks */
 
 void
-cfg_token_block_add_token(CfgTokenBlock *self, YYSTYPE *token)
+cfg_token_block_add_and_consume_token(CfgTokenBlock *self, YYSTYPE *token)
 {
   g_assert(self->pos == 0);
   g_array_append_val(self->tokens, *token);
+}
+
+void
+cfg_token_block_add_token(CfgTokenBlock *self, YYSTYPE *token)
+{
+  YYSTYPE copied_token;
+
+  cfg_lexer_copy_token(&copied_token, token);
+  cfg_token_block_add_and_consume_token(self, &copied_token);
 }
 
 YYSTYPE *

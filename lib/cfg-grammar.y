@@ -332,7 +332,7 @@ extern struct _StatsOptions *last_stats_options;
 %token LL_EOL                         10428
 %token LL_ERROR                       10429
 
-%destructor { free($$); } LL_IDENTIFIER LL_STRING LL_BLOCK
+%destructor { free($$); } <cptr>
 
 /* value pairs */
 %token KW_VALUE_PAIRS                 10500
